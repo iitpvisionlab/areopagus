@@ -1,0 +1,59 @@
+{% extends "polls/ticket_base.html" %}
+{% block title %}Вход{% endblock %}
+
+{% block body %}
+
+<article class="ticket">
+    <header class="ticket__wrapper">
+    </header>
+      <header class="ticket__wrapper">
+      <div class="ticket__header">
+        <div class="ticket__title">
+            Ареопаг — локальный вход
+        </div>
+      </div>
+    </header>
+
+    <div class="ticket__body">
+    {% if next %}
+        {% if user.is_authenticated %}
+        <p>Your account doesn't have access to this page. To proceed,
+        please login with an account that has access.</p>
+        {% else %}
+        <p>Please login to see this page.</p>
+        {% endif %}
+    {% endif %}
+
+    {% if form.errors %}
+    <section class="ticket__section">
+        Ошибки:
+        {% for error in form.errors.values() %}
+        <p style="color:red">
+            {{ error }}
+        </p>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <form method="post">
+    {{ csrf_input }}
+    <table>
+    <tr>
+        <td>{{ form.username.label_tag() }}</td>
+        <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password.label_tag() }}</td>
+        <td>{{ form.password }}</td>
+    </tr>
+    </table>
+
+    <input type="submit" value="Вход">
+    <input type="hidden" name="next" value="{{ next }}">
+    </form>
+    <form action="/">
+        <input type="submit" value="На главную" />
+    </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "polls/ticket_base.html" %}
+{% block title %}areopagus сообщение{% endblock %}
+{% block script %}
+<style>
+  a {
+  font: bold 17px Arial;
+  text-decoration: none;
+  background-color: #EEEEEE;
+  color: #333333;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
+  display: block;
+  margin: 0 auto;
+}
+</style>
+{% endblock %}
+{% block body %}
+<article class="ticket">
+  <div class="ticket__body">
+      {{ message }}
+  </div>
+  <div class="ticket__body">
+    <a href="{{ back_url|default('/')}}">{{ back_label|default('На главную') }}</a>
+  </div>
+</article>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "polls/ticket_base.html" %}
+{% block title %}Номера бюллетеней для печати{% endblock %}
+{% block script %}
+<style>
+a {
+  font: bold 17px Arial;
+  text-decoration: none;
+  background-color: #EEEEEE;
+  color: #333333;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
+}
+@media print {
+  a.back {
+      display:none;
+  }
+}
+.page {
+  page-break-after: always;
+  padding: 3em 1em;
+}
+.ticket {
+  margin: auto;
+}
+body {
+  display: inherit;
+}
+</style>
+<link href="/static/duDialog.min.css" rel="stylesheet">
+<script src="/static/duDialog.min.js"></script>
+<script>
+  window.onload = window.print;
+  window.onbeforeunload = function(){
+    return 'После закрытия страницы печати бюллетеней повторная печать станет невозможной. Подтвердите, что все бюллетени напечатаны';
+  };
+  function go_back() {
+    new duDialog(null, 'После закрытия страницы печати бюллетеней повторная печать станет невозможной. Подтвердите, что все бюллетени напечатаны', {
+      buttons: duDialog.OK_CANCEL,
+      okText: 'Да',
+      cancelText: 'Отмена',
+      callbacks: {
+        okClick: function() {
+          window.onbeforeunload = undefined;
+          document.location.assign('../..')
+        }
+      }
+    });
+  }
+  document.addEventListener("DOMContentLoaded", function(event) {
+    let back_btns = document.getElementsByClassName("back");
+    for (let back_btn of back_btns) {
+      back_btn.addEventListener('click', go_back);
+    }
+  });
+</script>
+{% endblock %}
+{% block body %}
+<p><a href="#" class="back">Назад</a></p>
+{% for private_key in private_keys %}
+<div class="page">
+<article class="ticket">
+  <header class="ticket__wrapper">
+  </header>
+    <header class="ticket__wrapper">
+    <div class="ticket__header">
+      <div class="ticket__title">
+        Бюллетень №
+      </div>
+      <div class="key">{{ private_key.value }}</div>
+    </div>
+  </header>
+  <div class="ticket__divider">
+    <div class="ticket__notch"></div>
+    <div class="ticket__notch ticket__notch--right"></div>
+  </div>
+  <div class="ticket__body">
+    <div style="margin-bottom: 0.5em;">
+      {{ Poll.title.field.verbose_name }}: <b>{{ poll.title }}</b><br>
+      {{ Poll.text.field.verbose_name }}: <b>{{ poll.text }}</b>
+    </div>
+    <div style="margin-bottom: 0.5em;">
+      {# links shouldn't be clickable as this page is only shown once #}
+      Проголосовать можно на сайте <a href="#">{{ settings.EMAIL_LINK_START }}</a>
+    </div>
+  </div>
+</article>
+</div>
+{% endfor %}
+<p><a href="#" class="back">Назад</a></p>
+{% endblock %}

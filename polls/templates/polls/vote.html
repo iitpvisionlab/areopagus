@@ -1,0 +1,101 @@
+{% extends "polls/ticket_base.html" %}
+{% block title %}Голосование{% endblock %}
+{% block script %}
+<style>
+  label{padding: 0.4em 0.2em;font-size: 1.2em;display:block}
+  label>input{margin-right: 0.33em;}
+  label:hover{background:rgba(20, 200, 20, 0.1)}
+  button[type=button] {
+    padding:5px 15px;
+    background:#ccc;
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    margin: 1em auto 0 auto;
+    display: block;
+
+}
+</style>
+<link href="/static/duDialog.min.css" rel="stylesheet">
+<script src="/static/duDialog.min.js"></script>
+<script>
+  function vote_clicked() {
+    let the_form = document.getElementsByTagName('form')[0];
+    let answer = (() => {
+      let yes = the_form.elements['vote_yes'].checked;
+      let no = the_form.elements['vote_no'].checked;
+      if (yes && no)
+        return 'Испортить бюллетень';
+      if (yes)
+        return 'За присуждение степени';
+      if (no)
+        return 'Против присуждения степени';
+      return '?';
+    })();
+    new duDialog(null, 'Вы голосуете: ' + answer, {
+      buttons: duDialog.OK_CANCEL,
+      okText: 'Да',
+      cancelText: 'Отмена',
+      callbacks: {
+        okClick: function() {
+          the_form.submit();
+        }
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function(event) {
+    let vote_btn = document.getElementById("vote_btn");
+    vote_btn.addEventListener('click', vote_clicked);
+    vote_btn.disabled = true;
+    let inputs = Array.from(document.getElementsByTagName("input"));
+    for (const input of inputs) {
+      input.addEventListener('change', function () {
+        vote_btn.disabled = inputs.every((obj) => !obj.checked);
+      });
+    }
+  });
+</script>
+{% endblock %}
+
+{% block body %}
+<article class="ticket">
+  <header class="ticket__wrapper">
+  </header>
+    <header class="ticket__wrapper">
+    <div class="ticket__header">
+      <div class="ticket__title">
+        Бюллетень №
+      </div>
+      <div class="key">{{ key.value }}<div>
+    </div>
+  </header>
+
+  <div class="ticket__divider">
+    <div class="ticket__notch"></div>
+    <div class="ticket__notch ticket__notch--right"></div>
+  </div>
+  <div class="ticket__body">
+    <section class="ticket__section">
+      <p><b>{{ poll.title }}</b></p>
+      <p>{{ poll.text }}</p>
+    </section>
+    <section class="ticket__section">
+      <form autocomplete="off" method="POST">{{ csrf_input }}
+        {% set input_type = 'checkbox' if poll.allow_spoiling else 'radio' %}
+        <label for="vote_yes"><input type="{{ input_type }}" name="response" id="vote_yes" value="{{ key.Response.YES }}" required>За присуждение степени</label>
+        <label for="vote_no"><input type="{{ input_type }}" name="response" id="vote_no" value="{{ key.Response.NO }}">Против присуждения степени</label>
+        <button id="vote_btn" type="button">Проголосовать</button>
+      </form>
+    </section>
+  </div>
+  <footer class="ticket__footer">
+    <svg width="70%" height="100%" version="1.1" viewBox="0 0 101.3 24.79" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(-17.5 -109.1)">
+       <path d="m115.7 120.6-8.603 8.944-0.0643-19.81-2.486-0.4728-6.395 17.07-0.05385-16.59-2.087-0.6143-9.545 15.6-0.03398-10.51-1.766-0.6898-10.84 12.42-0.03803-11.73-1.577-0.6157-11.03 12.63-0.03902-12.02-1.387-0.5419-11.22 12.85-0.03996-12.31-1.272-0.3666-9.958 16.68-0.06757-20.78-1.052-0.1846-7.024 20.45-0.06564-20.26-0.673-0.2682-10.92 12.18 1.112 0.2238 9.702-11.13-0.07143 22 0.8983 0.1575 7-19.95-0.06429 19.8 1.142 0.329 9.932-16.39-0.03823 11.78 1.279 0.4996 11.19-12.65-0.03939 12.15 1.468 0.5734 11-12.43-0.03842 11.86 1.657 0.6475 10.81-12.22-0.03743 11.57 1.955 0.5753 9.509-15.31-0.06235 19.2 2.33 0.4431 6.345-16.6-0.0523 16.16 2.33 0.9765 8.029-8.238 4.004-4.107z" fill="#231f20"/>
+      </g>
+     </svg>
+  </footer>
+</article>
+{% endblock %}

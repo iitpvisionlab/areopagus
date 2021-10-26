@@ -1,0 +1,1 @@
+python -m coverage run --branch --source='.' --omit='polls/migrations/*' manage.py test &&  python -m coverage report && python -m coverage html
